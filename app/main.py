@@ -5,6 +5,7 @@ from app.database import engine, get_db
 import string
 import random
 from pydantic import BaseModel
+from starlette.responses import RedirectResponse
 
 app = FastAPI(
     title="URL Shortener API",
@@ -34,3 +35,12 @@ def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     db.add(new_url)
     db.commit()
     return {"short_url": f"http://localhost:8000/{short_key}"}
+
+@app.get("/{short_key}")
+def redirect_to_url(short_key: str, db: Session = Depends(get_db)):
+    url = db.query(URL).filter(URL.short_url_key == short_key).first()
+    if url:
+        url.access_count += 1
+        db.commit()
+        return RedirectResponse(url.original_url)
+    raise HTTPException(status_code=404, detail="URL not found")
