@@ -6,7 +6,7 @@ from app.database import engine, get_db
 import string
 import random
 import os
-from pydantic import BaseModel
+from pydantic import BaseModel, HttpUrl
 from starlette.responses import RedirectResponse
 from datetime import datetime
 from typing import List
@@ -51,7 +51,7 @@ class URLResponse(BaseModel):
 
 
 class URLInput(BaseModel):
-    url: str
+    url: HttpUrl
 
 
 # Generate a short URL key
