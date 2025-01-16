@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
 from app.database import Base
-from datetime import datetime
+from datetime import datetime, UTC
 
 
 class URL(Base):
@@ -9,7 +9,7 @@ class URL(Base):
     id = Column(Integer, primary_key=True, index=True)
     short_url_key = Column(String, unique=True, index=True)
     original_url = Column(String)
-    created_at = Column(DateTime, default=datetime.utcnow)
+    created_at = Column(DateTime, default=lambda: datetime.now(UTC))
     access_count = Column(Integer, default=0)
     locations = relationship("URLLocation", backref="url")
 
@@ -23,4 +23,4 @@ class URLLocation(Base):
     country = Column(String)
     latitude = Column(Float)
     longitude = Column(Float)
-    accessed_at = Column(DateTime, default=datetime.utcnow)
+    accessed_at = Column(DateTime, default=lambda: datetime.now(UTC))
