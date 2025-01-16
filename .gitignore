@@ -2,6 +2,6 @@ venv/
 .env
 __pycache__/
 *.py[cod]
-url_shortener.db
+*.db
 *.sqlite3
 *.log
