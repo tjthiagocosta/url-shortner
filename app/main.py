@@ -91,10 +91,12 @@ async def root():
 @app.post("/shorten")
 def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     short_key = generate_short_key()
-    new_url = URL(short_url_key=short_key, original_url=url_input.url)
+    # Remove trailing slash from the URL if present
+    original_url = str(url_input.url).rstrip("/")
+    new_url = URL(short_url_key=short_key, original_url=original_url)
     db.add(new_url)
     db.commit()
-    return {"short_url": f"http://localhost:8000/{short_key}"}
+    return {"short_url": f"{API_HOST}/{short_key}"}
 
 
 @app.get("/{short_key}")

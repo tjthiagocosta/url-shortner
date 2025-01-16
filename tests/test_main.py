@@ -76,7 +76,6 @@ class TestURLShortener:
 class TestRedirection:
     @patch("requests.get")
     def test_redirect_success(self, mock_get, mock_location_data):
-        # Create shortened URL
         test_url = "https://www.example.com"
         response = client.post("/shorten", json={"url": test_url})
         short_key = response.json()["short_url"].split("/")[-1]
@@ -84,7 +83,6 @@ class TestRedirection:
         # Mock location API response
         mock_get.return_value.json.return_value = mock_location_data
 
-        # Test redirect
         response = client.get(f"/{short_key}", follow_redirects=False)
         assert response.status_code == 307
         assert response.headers["location"] == test_url
@@ -112,7 +110,6 @@ class TestRedirection:
 class TestStats:
     @patch("requests.get")
     def test_stats_with_locations(self, mock_get, mock_location_data):
-        # Create and access URL
         test_url = "https://www.example.com"
         response = client.post("/shorten", json={"url": test_url})
         short_key = response.json()["short_url"].split("/")[-1]
@@ -120,7 +117,6 @@ class TestStats:
         mock_get.return_value.json.return_value = mock_location_data
         client.get(f"/{short_key}")
 
-        # Check stats
         response = client.get(f"/stats/{short_key}")
         assert response.status_code == 200
         data = response.json()
