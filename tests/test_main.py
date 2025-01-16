@@ -157,3 +157,53 @@ class TestPerformance:
         response = client.get(f"/stats/{short_key}")
         assert response.status_code == 200
         assert response.json()["access_count"] == 10
+
+
+class TestLocationHandling:
+    def test_location_data_missing(self):
+        # Create a URL
+        test_url = "https://www.example.com"
+        response = client.post("/shorten", json={"url": test_url})
+        short_key = response.json()["short_url"].split("/")[-1]
+
+        # Mock the location API to return None
+        with patch("app.main.get_location_data", return_value=None):
+            # Access the URL
+            client.get(f"/{short_key}")
+
+            # Check stats
+            response = client.get(f"/stats/{short_key}")
+            assert response.status_code == 200
+            data = response.json()
+
+            # Verify location was saved with default values
+            assert len(data["locations"]) == 1
+            location = data["locations"][0]
+            assert location["city"] == "Unknown"
+            assert location["country"] == "Unknown"
+            assert location["coordinates"] == {"lat": 0.0, "lon": 0.0}
+
+    @patch("requests.get")
+    def test_location_api_error(self, mock_get):
+        # Create a URL
+        test_url = "https://www.example.com"
+        response = client.post("/shorten", json={"url": test_url})
+        short_key = response.json()["short_url"].split("/")[-1]
+
+        # Mock API to raise an exception
+        mock_get.side_effect = Exception("API Error")
+
+        # Access the URL
+        client.get(f"/{short_key}")
+
+        # Check stats
+        response = client.get(f"/stats/{short_key}")
+        assert response.status_code == 200
+        data = response.json()
+
+        # Verify location was saved with default values
+        assert len(data["locations"]) == 1
+        location = data["locations"][0]
+        assert location["city"] == "Unknown"
+        assert location["country"] == "Unknown"
+        assert location["coordinates"] == {"lat": 0.0, "lon": 0.0}

@@ -108,17 +108,17 @@ async def redirect_to_url(
         ip = request.headers.get("x-forwarded-for") or request.client.host
         location = await get_location_data(ip)
 
-        if location:
-            url_location = URLLocation(
-                url_id=url.id,
-                ip_address=ip,
-                city=location["city"],
-                country=location["country"],
-                latitude=location["lat"],
-                longitude=location["lon"],
-            )
-            db.add(url_location)
-            db.commit()
+        # Create URL location with default values if location data is missing
+        url_location = URLLocation(
+            url_id=url.id,
+            ip_address=ip,
+            city=location["city"] if location else "Unknown",
+            country=location["country"] if location else "Unknown",
+            latitude=location["lat"] if location else 0.0,
+            longitude=location["lon"] if location else 0.0,
+        )
+        db.add(url_location)
+        db.commit()
 
         url.access_count += 1
         db.commit()
