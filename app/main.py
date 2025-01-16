@@ -8,7 +8,7 @@ import random
 import os
 from pydantic import BaseModel
 from starlette.responses import RedirectResponse
-
+from datetime import datetime
 # Load environment variables
 API_HOST = os.getenv("API_HOST", "http://localhost:8000")
 ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
@@ -30,6 +30,12 @@ app.add_middleware(
 
 # Create database tables
 Base.metadata.create_all(bind=engine)
+
+class URLResponse(BaseModel):
+    short_url: str
+    original_url: str
+    created_at: datetime
+    access_count: int
 
 # Generate a short URL key
 def generate_short_key(length: int = 6):
@@ -59,3 +65,16 @@ def redirect_to_url(short_key: str, db: Session = Depends(get_db)):
         db.commit()
         return RedirectResponse(url.original_url)
     raise HTTPException(status_code=404, detail="URL not found")
+
+@app.get("/api/stats/{short_key}", response_model=URLResponse, tags=["Analytics"])
+async def get_url_stats(short_key: str, db: Session = Depends(get_db)):
+    url = db.query(URL).filter(URL.short_url_key == short_key).first()
+    if not url:
+        raise HTTPException(status_code=404, detail="URL not found")
+    
+    return URLResponse(
+        short_url=f"{API_HOST}/{short_key}",
+        original_url=url.original_url,
+        created_at=url.created_at,
+        access_count=url.access_count
+    )
