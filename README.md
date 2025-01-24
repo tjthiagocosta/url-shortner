@@ -1,127 +1,201 @@
 # URL Shortener API
 
-This is a FastAPI-based URL Shortener application that allows users to shorten URLs, track access analytics, and retrieve statistics. The project includes features such as geolocation tracking for URL visits and an integrated test suite.
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
 
----
+A high-performance URL shortening service built with FastAPI, featuring analytics and geolocation tracking.
 
 ## Features
-- Shorten long URLs into short, easy-to-use links.
-- Redirect users to the original URL via the shortened URL.
-- Analytics: Track the number of accesses and geolocation information (city, country, coordinates) for each shortened URL.
-- Health check endpoint for verifying the API status.
-- Fully tested with unit and integration tests.
 
----
+### Core Functionality
+- 🚀 Fast URL shortening with customizable key length
+- 🔗 Reliable redirection with 307 status code
+- 📊 Comprehensive analytics tracking
 
-## Requirements
-- Python 3.9 or later
-- FastAPI
-- SQLAlchemy
-- Pydantic
-- pytest (for testing)
+### Analytics
+- 🌍 Geolocation tracking (city, country, coordinates)
+- 📈 Access count tracking
+- ⏰ Timestamped access records
 
----
+### Technical Features
+- 🛡️ CORS support with configurable allowed origins
+- 📄 OpenAPI documentation (Swagger UI & ReDoc)
+- 🧪 Comprehensive test coverage
+- 🐳 Docker-ready configuration
 
-## Installation
+## Technology Stack
+
+### Backend
+- **Framework**: FastAPI
+- **Database**: SQLite (production-ready databases supported)
+- **ORM**: SQLAlchemy
+- **Validation**: Pydantic
+
+### Analytics
+- **Geolocation**: IP-API.com
+
+### Testing
+- **Framework**: pytest
+- **Test Client**: FastAPI TestClient
+- **Mocking**: unittest.mock
+
+## Getting Started
+
+### Prerequisites
+- Python 3.9+
+- pip
+- Virtual environment (recommended)
+
+### Installation
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/tjthiagocosta/url-shortner.git
-   cd url-shortner
+   git clone https://github.com/tjthiagocosta/url-shortener.git
+   cd url-shortener
    ```
 
-2. Set up a virtual environment and install dependencies:
+2. Set up environment:
    ```bash
    python -m venv venv
-   source venv/bin/activate  # For Linux/Mac
-   venv\Scripts\activate     # For Windows
+   source venv/bin/activate  # Linux/Mac
+   venv\Scripts\activate     # Windows
+   ```
+
+3. Install dependencies:
+   ```bash
    pip install -r requirements.txt
    ```
 
-3. Set environment variables (optional):
-   ```bash
-   export API_HOST="http://localhost:8000"
-   export ALLOWED_ORIGINS="http://localhost:3000"
+4. Configure environment variables:
+   Create a `.env` file with:
+   ```env
+   DATABASE_URL=sqlite:///./url_shortener.db
+   API_HOST=https://api.shrnq.tech
+   ALLOWED_ORIGINS="https://shrnq.tech"
    ```
 
----
+### Running the Application
 
-## Usage
-
-### Run the Application
-Start the FastAPI server:
+Start the development server:
 ```bash
 uvicorn app.main:app --reload
 ```
-Access the API documentation at [http://localhost:8000/docs](http://localhost:8000/docs).
 
-### API Endpoints
-- `GET /`: Health check.
-- `POST /shorten`: Shorten a URL.
+Access the API documentation:
+- Swagger UI: `http://localhost:8000/docs`
+- ReDoc: `http://localhost:8000/redoc`
+
+## API Endpoints
+
+### Health Check
+- `GET /` - Verify API status
+
+### URL Shortening
+- `POST /shorten` - Create a shortened URL
   - Request Body: `{ "url": "https://example.com" }`
-  - Response: `{ "short_url": "http://localhost:8000/<short_key>" }`
-- `GET /{short_key}`: Redirect to the original URL.
-- `GET /stats/{short_key}`: Retrieve analytics for the shortened URL.
+  - Response: `{ "short_url": "https://api.shrnq.tech/<short_key>" }`
 
----
+### Redirection
+- `GET /{short_key}` - Redirect to original URL
+
+### Analytics
+- `GET /stats/{short_key}` - Get URL statistics
+  - Response:
+    ```json
+    {
+      "short_url": "https://api.shrnq.tech/<short_key>",
+      "original_url": "https://example.com",
+      "created_at": "2024-01-01T12:00:00",
+      "access_count": 42,
+      "locations": [
+        {
+          "city": "New York",
+          "country": "United States",
+          "coordinates": {
+            "lat": 40.7128,
+            "lon": -74.0060
+          },
+          "accessed_at": "2024-01-01T12:00:00"
+        }
+      ]
+    }
+    ```
 
 ## Testing
 
-1. Set up the test database:
-   ```bash
-   export SQLALCHEMY_TEST_DATABASE_URL="sqlite:///./test.db"
-   ```
+Run the test suite:
+```bash
+pytest
+```
 
-2. Run the test suite:
-   ```bash
-   pytest
-   ```
-
----
+Test coverage includes:
+- Unit tests for core functionality
+- Integration tests for API endpoints
+- Error handling scenarios
+- Edge case testing
 
 ## Project Structure
+
 ```
-URL-SHORTNER/
-│
+url-shortener/
 ├── app/
-│   ├── __pycache__/         # Python cache files
-│   ├── __init__.py          # App initialization
 │   ├── config.py            # Application configuration
-│   ├── database.py          # Database connection and session management
-│   ├── main.py              # Main application logic
-│   ├── models.py            # SQLAlchemy models for URL and URLLocation
-│
-├── tests/
-│   ├── __pycache__/         # Test cache files
-│   ├── __init__.py          # Test module initialization
-│   ├── test_main.py         # Test suite for the application
-│
-├── venv/                    # Virtual environment files
-│
+│   ├── database.py          # Database connection
+│   ├── main.py              # API endpoints
+│   ├── models.py            # Database models
+│   ├── services/            # Business logic
+│   │   ├── url_service.py
+│   │   ├── location_service.py
+│   │   └── key_generator.py
+├── tests/                   # Test suite
+│   ├── test_main.py         # API tests
 ├── .env                     # Environment variables
 ├── .gitignore               # Git ignore rules
 ├── README.md                # Project documentation
-├── requirements.txt         # Project dependencies
+├── requirements.txt         # Production dependencies
 ├── requirements-dev.txt     # Development dependencies
 ```
 
----
+## Deployment
+
+### Docker
+Build and run the container:
+```bash
+docker build -t url-shortener .
+docker run -p 8000:8000 url-shortener
+```
+
+### Production Considerations
+- Use a production-ready database (PostgreSQL, MySQL)
+- Configure proper CORS settings
+- Implement rate limiting
+- Set up monitoring and logging
 
 ## Future Enhancements
-- Add a user authentication system for managing URLs.
-- Enable custom short keys for URLs.
-- Improve geolocation accuracy by integrating with more reliable APIs.
-- Add advanced analytics (e.g., browser/device information).
+- [ ] User authentication and URL management
+- [ ] Custom short URLs
+- [ ] Expiration dates for URLs
+- [ ] Advanced analytics (browser, device, referrer)
+- [ ] Rate limiting and API keys
+- [ ] Bulk URL shortening
 
----
+## Contributing
+
+Contributions are welcome! Please follow these steps:
+1. Fork the repository
+2. Create a feature branch
+3. Submit a pull request
 
 ## License
-This project is licensed under the MIT License.
 
----
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ## Author
+
 Thiago Costa
 
-For any questions or contributions, feel free to reach out.
+## Support
+
+For support or questions, please open an issue in the GitHub repository.
 
