@@ -34,6 +34,15 @@ app.add_middleware(
 # Create database tables
 Base.metadata.create_all(bind=engine)
 
+# Import services
+from app.services import (
+    create_short_url,
+    get_url_by_key,
+    track_url_visit,
+    get_url_stats,
+    get_location_data,
+)
+
 
 class LocationResponse(BaseModel):
     """
@@ -82,46 +91,6 @@ class URLInput(BaseModel):
     url: HttpUrl
 
 
-def generate_short_key(length: int = 6) -> str:
-    """
-    Generate a random short key for URL shortening.
-
-    Args:
-        length: Length of the short key (default: 6)
-
-    Returns:
-        str: Random string of specified length containing letters and numbers
-    """
-    characters = string.ascii_letters + string.digits
-    return "".join(random.choice(characters) for _ in range(length))
-
-
-async def get_location_data(ip_address: str) -> dict:
-    """
-    Get geolocation data for an IP address using ip-api.com.
-
-    Args:
-        ip_address: IP address to look up
-
-    Returns:
-        dict: Location data including city, country, latitude, and longitude
-              Returns None if the request fails or data is invalid
-    """
-    try:
-        response = requests.get(f"http://ip-api.com/json/{ip_address}")
-        data = response.json()
-        if data.get("status") == "success":
-            return {
-                "city": data.get("city"),
-                "country": data.get("country"),
-                "lat": data.get("lat"),
-                "lon": data.get("lon"),
-            }
-    except Exception:
-        pass
-    return None
-
-
 @app.get("/", tags=["Health"])
 async def root():
     """
@@ -141,19 +110,9 @@ async def root():
 def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     """
     Create a shortened URL from a long URL.
-
-    Args:
-        url_input: URLInput model containing the URL to shorten
-        db: Database session
-
-    Returns:
-        dict: Contains the shortened URL
     """
-    short_key = generate_short_key()
     original_url = str(url_input.url).rstrip("/")
-    new_url = URL(short_url_key=short_key, original_url=original_url)
-    db.add(new_url)
-    db.commit()
+    short_key = create_short_url(db, original_url)
     return {"short_url": f"{API_HOST}/{short_key}"}
 
 
@@ -163,37 +122,12 @@ async def redirect_to_url(
 ):
     """
     Redirect to the original URL and track visit information.
-
-    Args:
-        short_key: The short key of the URL
-        request: FastAPI request object containing client information
-        db: Database session
-
-    Returns:
-        RedirectResponse: Redirects to the original URL
-
-    Raises:
-        HTTPException: If the URL is not found (404)
     """
-    url = db.query(URL).filter(URL.short_url_key == short_key).first()
+    url = get_url_by_key(db, short_key)
     if url:
         ip = request.headers.get("x-forwarded-for") or request.client.host
         location = await get_location_data(ip)
-
-        # Create URL location with default values if location data is missing
-        url_location = URLLocation(
-            url_id=url.id,
-            ip_address=ip,
-            city=location["city"] if location else "Unknown",
-            country=location["country"] if location else "Unknown",
-            latitude=location["lat"] if location else 0.0,
-            longitude=location["lon"] if location else 0.0,
-        )
-        db.add(url_location)
-        db.commit()
-
-        url.access_count += 1
-        db.commit()
+        track_url_visit(db, url, ip, location)
         return RedirectResponse(url.original_url)
     raise HTTPException(status_code=404, detail="URL not found")
 
@@ -202,18 +136,8 @@ async def redirect_to_url(
 async def get_url_stats(short_key: str, db: Session = Depends(get_db)):
     """
     Get analytics for a shortened URL.
-
-    Args:
-        short_key: The short key of the URL
-        db: Database session
-
-    Returns:
-        URLResponse: URL information including visit statistics and locations
-
-    Raises:
-        HTTPException: If the URL is not found (404)
     """
-    url = db.query(URL).filter(URL.short_url_key == short_key).first()
+    url = get_url_by_key(db, short_key)
     if not url:
         raise HTTPException(status_code=404, detail="URL not found")
 
