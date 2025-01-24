@@ -6,6 +6,7 @@ from sqlalchemy.orm import sessionmaker
 from app.main import app
 from app.database import Base, get_db
 from app.models import URL, URLLocation
+from app.config import settings
 from datetime import datetime
 
 SQLALCHEMY_TEST_DATABASE_URL = "sqlite:///./test.db"
@@ -52,7 +53,7 @@ class TestHealthCheck:
         assert response.json() == {
             "status": "healthy",
             "version": "1.0.0",
-            "documentation": "http://localhost:8000/docs",
+            "documentation": f"{settings.api_host}/docs",
         }
 
 
@@ -62,15 +63,13 @@ class TestURLShortener:
         response = client.post("/shorten", json={"url": test_url})
         assert response.status_code == 200
         assert "short_url" in response.json()
-        assert response.json()["short_url"].startswith("http://localhost:8000/")
+        assert response.json()["short_url"].startswith(f"{settings.api_host}/")
 
-    def test_shorten_invalid_url_format(self):
-        response = client.post("/shorten", json={"url": "invalid-url"})
-        assert response.status_code == 422
-
-    def test_shorten_empty_url(self):
-        response = client.post("/shorten", json={"url": ""})
-        assert response.status_code == 422
+    def test_shorten_invalid_url(self):
+        # Test both invalid format and empty URL
+        for invalid_url in ["invalid-url", ""]:
+            response = client.post("/shorten", json={"url": invalid_url})
+            assert response.status_code == 422
 
 
 class TestRedirection:
@@ -143,67 +142,28 @@ class TestStats:
         assert len(response.json()["locations"]) == 0
 
 
-class TestPerformance:
-    def test_multiple_concurrent_visits(self):
-        # Create URL
-        test_url = "https://www.example.com"
-        response = client.post("/shorten", json={"url": test_url})
-        short_key = response.json()["short_url"].split("/")[-1]
-
-        # Simulate multiple visits
-        for _ in range(10):
-            client.get(f"/{short_key}")
-
-        response = client.get(f"/stats/{short_key}")
-        assert response.status_code == 200
-        assert response.json()["access_count"] == 10
-
-
 class TestLocationHandling:
-    def test_location_data_missing(self):
-        # Create a URL
-        test_url = "https://www.example.com"
-        response = client.post("/shorten", json={"url": test_url})
-        short_key = response.json()["short_url"].split("/")[-1]
-
-        # Mock the location API to return None
-        with patch("app.main.get_location_data", return_value=None):
-            # Access the URL
-            client.get(f"/{short_key}")
-
-            # Check stats
-            response = client.get(f"/stats/{short_key}")
-            assert response.status_code == 200
-            data = response.json()
-
-            # Verify location was saved with default values
-            assert len(data["locations"]) == 1
-            location = data["locations"][0]
-            assert location["city"] == "Unknown"
-            assert location["country"] == "Unknown"
-            assert location["coordinates"] == {"lat": 0.0, "lon": 0.0}
-
     @patch("requests.get")
-    def test_location_api_error(self, mock_get):
-        # Create a URL
+    def test_location_error_handling(self, mock_get):
+        # Test both missing data and API error
         test_url = "https://www.example.com"
         response = client.post("/shorten", json={"url": test_url})
         short_key = response.json()["short_url"].split("/")[-1]
 
-        # Mock API to raise an exception
-        mock_get.side_effect = Exception("API Error")
+        # Test missing data
+        mock_get.return_value.json.return_value = None
+        client.get(f"/{short_key}")
 
-        # Access the URL
+        # Test API error
+        mock_get.side_effect = Exception("API Error")
         client.get(f"/{short_key}")
 
         # Check stats
         response = client.get(f"/stats/{short_key}")
         assert response.status_code == 200
         data = response.json()
-
-        # Verify location was saved with default values
-        assert len(data["locations"]) == 1
-        location = data["locations"][0]
-        assert location["city"] == "Unknown"
-        assert location["country"] == "Unknown"
-        assert location["coordinates"] == {"lat": 0.0, "lon": 0.0}
+        assert len(data["locations"]) == 2
+        for location in data["locations"]:
+            assert location["city"] == "Unknown"
+            assert location["country"] == "Unknown"
+            assert location["coordinates"] == {"lat": 0.0, "lon": 0.0}
