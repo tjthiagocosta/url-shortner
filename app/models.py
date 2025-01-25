@@ -1,4 +1,4 @@
-from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey
+from sqlalchemy import Column, String, Integer, Float, DateTime, ForeignKey, Boolean
 from sqlalchemy.orm import relationship
 from app.database import Base
 from datetime import datetime, UTC
@@ -24,3 +24,8 @@ class URLLocation(Base):
     latitude = Column(Float)
     longitude = Column(Float)
     accessed_at = Column(DateTime, default=lambda: datetime.now(UTC))
+    user_agent = Column(String)
+    device_type = Column(String)
+    browser = Column(String)
+    os = Column(String)
+    is_bot = Column(Boolean, default=False)

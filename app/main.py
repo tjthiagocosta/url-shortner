@@ -126,8 +126,9 @@ async def redirect_to_url(
     url = get_url_by_key(db, short_key)
     if url:
         ip = request.headers.get("x-forwarded-for") or request.client.host
+        user_agent = request.headers.get("user-agent", "")
         location = await get_location_data(ip)
-        track_url_visit(db, url, ip, location)
+        track_url_visit(db, url, ip, location, user_agent)
         return RedirectResponse(url.original_url)
     raise HTTPException(status_code=404, detail="URL not found")
 

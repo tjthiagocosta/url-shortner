@@ -3,6 +3,7 @@ from app.models import URL, URLLocation
 from .key_generator import generate_short_key
 from datetime import datetime
 from typing import Optional
+from .device_service import parse_user_agent
 
 
 def create_short_url(db: Session, original_url: str) -> str:
@@ -24,11 +25,13 @@ def get_url_by_key(db: Session, short_key: str) -> Optional[URL]:
 
 
 def track_url_visit(
-    db: Session, url: URL, ip_address: str, location: Optional[dict]
+    db: Session, url: URL, ip_address: str, location: Optional[dict], user_agent: str
 ) -> None:
     """
-    Track a URL visit and update analytics.
+    Track a URL visit with location and device information.
     """
+    device_info = parse_user_agent(user_agent)
+
     url_location = URLLocation(
         url_id=url.id,
         ip_address=ip_address,
@@ -36,6 +39,11 @@ def track_url_visit(
         country=location["country"] if location else "Unknown",
         latitude=location["lat"] if location else 0.0,
         longitude=location["lon"] if location else 0.0,
+        user_agent=user_agent,
+        device_type=device_info["device_type"],
+        browser=device_info["browser"],
+        os=device_info["os"],
+        is_bot=device_info["is_bot"],
     )
     db.add(url_location)
     url.access_count += 1

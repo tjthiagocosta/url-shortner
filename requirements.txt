@@ -33,3 +33,4 @@ uvicorn==0.34.0
 uvloop==0.21.0
 watchfiles==1.0.4
 websockets==14.1
+user-agents>=2.2.0
