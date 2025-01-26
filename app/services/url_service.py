@@ -4,17 +4,19 @@ from .key_generator import generate_short_key
 from datetime import datetime
 from typing import Optional
 from .device_service import parse_user_agent
+from app.config import settings
 
 
-def create_short_url(db: Session, original_url: str) -> str:
+def create_short_url(db: Session, original_url: str) -> dict:
     """
     Create a new short URL entry in the database.
+    Returns a dictionary with both API and user-facing URLs.
     """
     short_key = generate_short_key()
     new_url = URL(short_url_key=short_key, original_url=original_url)
     db.add(new_url)
     db.commit()
-    return short_key
+    return {"short_url": f"{settings.domain.rstrip('/')}/{short_key}"}
 
 
 def get_url_by_key(db: Session, short_key: str) -> Optional[URL]:
@@ -55,7 +57,7 @@ def get_url_stats(db: Session, url: URL) -> dict:
     Get statistics for a URL.
     """
     return {
-        "short_url": url.short_url_key,
+        "short_url": f"{settings.api_host.rstrip('/')}/{url.short_url_key}",
         "original_url": url.original_url,
         "created_at": url.created_at,
         "access_count": url.access_count,

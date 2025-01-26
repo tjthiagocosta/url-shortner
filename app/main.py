@@ -112,8 +112,7 @@ def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     Create a shortened URL from a long URL.
     """
     original_url = str(url_input.url).rstrip("/")
-    short_key = create_short_url(db, original_url)
-    return {"short_url": f"{API_HOST}/{short_key}"}
+    return create_short_url(db, original_url)
 
 
 @app.get("/{short_key}")
