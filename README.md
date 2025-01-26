@@ -1,191 +1,163 @@
-# URL Shortener API
+# URL Shortener Full Stack Application
 
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)
-![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
 
-A high-performance URL shortening service built with FastAPI, featuring analytics and geolocation tracking.
+A modern, full-stack URL shortening service featuring a FastAPI backend and React frontend, with comprehensive analytics including device tracking and geolocation insights.
 
 ## Features
 
-### Core Functionality
-- 🚀 Fast URL shortening with customizable key length
-- 🔗 Reliable redirection with 307 status code
-- 📊 Comprehensive analytics tracking
+### Backend
 
-### Analytics
-- 🌍 Geolocation tracking (city, country, coordinates)
-- 📈 Access count tracking
-- ⏰ Timestamped access records
+- 🚀 High-performance URL shortening with FastAPI
+- 📊 Advanced analytics tracking:
+  - 📱 Device information (mobile/desktop/tablet)
+  - 🌐 Browser and OS detection
+  - 🤖 Bot detection
+  - 🌍 Geolocation tracking
+- 🔄 RESTful API endpoints
+- 📝 OpenAPI documentation
 
-### Technical Features
-- 🛡️ CORS support with configurable allowed origins
-- 📄 OpenAPI documentation (Swagger UI & ReDoc)
-- 🧪 Comprehensive test coverage
-- 🐳 Docker-ready configuration
+### Frontend (Under Construction)
+
+- ⚛️ Modern React with TypeScript
+- 🎨 Sleek UI with Tailwind CSS
+- 📱 Responsive design
+- 🌙 Dark mode support (planned)
 
 ## Technology Stack
 
 ### Backend
+
 - **Framework**: FastAPI
-- **Database**: SQLite (production-ready databases supported)
+- **Database**: SQLite
 - **ORM**: SQLAlchemy
-- **Validation**: Pydantic
+- **Analytics**:
+  - User-Agents (device detection)
+  - IP-API.com (geolocation)
 
-### Analytics
-- **Geolocation**: IP-API.com
+### Frontend
 
-### Testing
-- **Framework**: pytest
-- **Test Client**: FastAPI TestClient
-- **Mocking**: unittest.mock
-
-## Getting Started
-
-### Prerequisites
-- Python 3.9+
-- pip
-- Virtual environment (recommended)
-
-### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/tjthiagocosta/url-shortener.git
-   cd url-shortener
-   ```
-
-2. Set up environment:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # Linux/Mac
-   venv\Scripts\activate     # Windows
-   ```
-
-3. Install dependencies:
-   ```bash
-   pip install -r requirements.txt
-   ```
-
-4. Configure environment variables:
-   Create a `.env` file with:
-   ```env
-   DATABASE_URL=sqlite:///./url_shortener.db
-   API_HOST=https://api.shrnq.tech
-   ALLOWED_ORIGINS="https://shrnq.tech"
-   ```
-
-### Running the Application
-
-Start the development server:
-```bash
-uvicorn app.main:app --reload
-```
-
-Access the API documentation:
-- Swagger UI: `http://localhost:8000/docs`
-- ReDoc: `http://localhost:8000/redoc`
-
-## API Endpoints
-
-### Health Check
-- `GET /` - Verify API status
-
-### URL Shortening
-- `POST /shorten` - Create a shortened URL
-  - Request Body: `{ "url": "https://example.com" }`
-  - Response: `{ "short_url": "https://api.shrnq.tech/<short_key>" }`
-
-### Redirection
-- `GET /{short_key}` - Redirect to original URL
-
-### Analytics
-- `GET /stats/{short_key}` - Get URL statistics
-  - Response:
-    ```json
-    {
-      "short_url": "https://api.shrnq.tech/<short_key>",
-      "original_url": "https://example.com",
-      "created_at": "2024-01-01T12:00:00",
-      "access_count": 42,
-      "locations": [
-        {
-          "city": "New York",
-          "country": "United States",
-          "coordinates": {
-            "lat": 40.7128,
-            "lon": -74.0060
-          },
-          "accessed_at": "2024-01-01T12:00:00"
-        }
-      ]
-    }
-    ```
-
-## Testing
-
-Run the test suite:
-```bash
-pytest
-```
-
-Test coverage includes:
-- Unit tests for core functionality
-- Integration tests for API endpoints
-- Error handling scenarios
-- Edge case testing
+- **Framework**: React 18
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Build Tool**: Vite
+- **Package Manager**: pnpm
 
 ## Project Structure
 
 ```
 url-shortener/
-├── app/
-│   ├── config.py            # Application configuration
-│   ├── database.py          # Database connection
-│   ├── main.py              # API endpoints
-│   ├── models.py            # Database models
-│   ├── services/            # Business logic
-│   │   ├── url_service.py
-│   │   ├── location_service.py
-│   │   └── key_generator.py
-├── tests/                   # Test suite
-│   ├── test_main.py         # API tests
-├── .env                     # Environment variables
-├── .gitignore               # Git ignore rules
-├── README.md                # Project documentation
-├── requirements.txt         # Production dependencies
-├── requirements-dev.txt     # Development dependencies
+├── backend/
+│   ├── app/
+│   │   ├── services/
+│   │   │   ├── device_service.py
+│   │   │   ├── location_service.py
+│   │   │   └── url_service.py
+│   │   ├── main.py
+│   │   ├── models.py
+│   │   └── database.py
+│   ├── requirements.txt
+│   └── .env
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   ├── pages/
+│   │   └── App.tsx
+│   ├── package.json
+│   └── tailwind.config.js
+└── README.md
 ```
 
-## Deployment
+## Getting Started
 
-### Docker
-Build and run the container:
+### Backend Setup
+
 ```bash
-docker build -t url-shortener .
-docker run -p 8000:8000 url-shortener
+cd backend
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+venv\Scripts\activate     # Windows
+pip install -r requirements.txt
 ```
 
-### Production Considerations
-- Use a production-ready database (PostgreSQL, MySQL)
-- Configure proper CORS settings
-- Implement rate limiting
-- Set up monitoring and logging
+Configure environment variables in `backend/.env`:
 
-## Future Enhancements
-- [ ] User authentication and URL management
-- [ ] Custom short URLs
-- [ ] Expiration dates for URLs
-- [ ] Advanced analytics (browser, device, referrer)
-- [ ] Rate limiting and API keys
-- [ ] Bulk URL shortening
+```env
+DATABASE_URL=sqlite:///./data/url_shortener.db
+API_HOST=http://localhost:8000
+ALLOWED_ORIGINS=http://localhost:5173
+```
+
+### Frontend Setup
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+
+## API Endpoints
+
+### Core Endpoints
+
+- `GET /` - Health check
+- `POST /shorten` - Create short URL
+- `GET /{short_key}` - Redirect to original URL
+- `GET /stats/{short_key}` - Get URL analytics
+
+### Analytics Response Example
+
+```json
+{
+  "short_url": "http://localhost:8000/abc123",
+  "original_url": "https://example.com",
+  "created_at": "2024-01-01T12:00:00",
+  "access_count": 42,
+  "locations": [
+    {
+      "city": "New York",
+      "country": "United States",
+      "coordinates": {
+        "lat": 40.7128,
+        "lon": -74.006
+      },
+      "accessed_at": "2024-01-01T12:00:00"
+    }
+  ],
+  "device_info": {
+    "device_type": "mobile",
+    "browser": "Chrome",
+    "os": "iOS",
+    "is_bot": false
+  }
+}
+```
+
+## Development Status
+
+- ✅ Backend API complete
+- 🚧 Frontend under construction
+- 📱 Device analytics implemented
+- 🌍 Geolocation tracking active
+- 🎨 UI/UX design in progress
+
+## Roadmap
+
+- [ ] User authentication
+- [ ] Custom URL slugs
+- [ ] QR code generation
+- [ ] QR code customization
+- [ ] Advanced analytics dashboard
+- [ ] Rate limiting
+- [ ] Dockerize application
 
 ## Contributing
 
-Contributions are welcome! Please follow these steps:
-1. Fork the repository
-2. Create a feature branch
-3. Submit a pull request
+Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## License
 
@@ -198,4 +170,3 @@ Thiago Costa
 ## Support
 
 For support or questions, please open an issue in the GitHub repository.
-
