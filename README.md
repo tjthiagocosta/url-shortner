@@ -1,95 +1,103 @@
-# URL Shortener Full Stack Application
+# URL Shortener Pro
 
-![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=FastAPI&logoColor=white)
-![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![SQLite](https://img.shields.io/badge/SQLite-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://react.dev)
+[![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com)
 
-A modern, full-stack URL shortening service featuring a FastAPI backend and React frontend, with comprehensive analytics including device tracking and geolocation insights.
+A full-stack URL shortening service with advanced analytics capabilities, featuring a FastAPI backend and modern React frontend.
 
-## Features
 
-### Backend
+## ✨ Features
 
-- 🚀 High-performance URL shortening with FastAPI
-- 📊 Advanced analytics tracking:
-  - 📱 Device information (mobile/desktop/tablet)
-  - 🌐 Browser and OS detection
-  - 🤖 Bot detection
-  - 🌍 Geolocation tracking
-- 🔄 RESTful API endpoints
-- 📝 OpenAPI documentation
+### Backend Services
 
-### Frontend (Under Construction)
+- **URL Shortening**
+  - Generate unique short codes
+  - High-performance redirects
+  - Custom slug support
+- **Analytics Engine**
+  - Real-time click tracking
+  - Device detection (Mobile/Desktop/Tablet)
+  - Browser & OS identification
+  - Bot detection
+  - Geolocation tracking
+- **Security**
+  - Rate limiting
+  - URL validation
+  - Expiring links
+- **API**
+  - RESTful endpoints
+  - OpenAPI documentation
+  - JWT Authentication
 
-- ⚛️ Modern React with TypeScript
-- 🎨 Sleek UI with Tailwind CSS
-- 📱 Responsive design
-- 🌙 Dark mode support (planned)
+### Frontend (In Development)
 
-## Technology Stack
+- Modern dashboard UI
+- Real-time analytics visualization
+- URL management interface
+- Responsive design
+- Dark/Light mode
 
-### Backend
+## 🛠 Tech Stack
 
-- **Framework**: FastAPI
-- **Database**: SQLite
-- **ORM**: SQLAlchemy
-- **Analytics**:
-  - User-Agents (device detection)
-  - IP-API.com (geolocation)
+**Backend**  
+![Python](https://img.shields.io/badge/Python-3.10+-blue?logo=python&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-0.95+-green?logo=fastapi)
+![SQLAlchemy](https://img.shields.io/badge/SQLAlchemy-2.0+-red?logo=python&logoColor=white)
+![Redis](https://img.shields.io/badge/Redis-Caching-yellow?logo=redis)
 
-### Frontend
+**Frontend**  
+![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-3178C6?logo=typescript&logoColor=white)
+![Shadcn/ui](https://img.shields.io/badge/Shadcn/ui-0.5+-18181b?logo=ui)
 
-- **Framework**: React 18
-- **Language**: TypeScript
-- **Styling**: Tailwind CSS
-- **Build Tool**: Vite
-- **Package Manager**: pnpm
 
-## Project Structure
+
+## 📂 Project Structure
 
 ```
-url-shortener/
-├── backend/
-│   ├── app/
-│   │   ├── services/
-│   │   │   ├── device_service.py
-│   │   │   ├── location_service.py
-│   │   │   └── url_service.py
-│   │   ├── main.py
-│   │   ├── models.py
-│   │   └── database.py
-│   ├── requirements.txt
-│   └── .env
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   ├── pages/
-│   │   └── App.tsx
-│   ├── package.json
-│   └── tailwind.config.js
-└── README.md
+url-shortener-pro/
+├── backend/               # FastAPI backend
+│   ├── app/               # Application core
+│   │   ├── models/        # Database models
+│   │   ├── services/      # Business logic
+│   │   ├── routes/        # API endpoints
+│   │   ├── core/          # Configuration & utils
+│   │   └── main.py        # Application entrypoint
+│   ├── tests/             # Test suite
+│   └── requirements.txt   # Dependencies
+│
+└── frontend/              # React frontend
+    ├── public/            # Static assets
+    ├── src/               # Application source
+    │   ├── components/    # UI components
+    │   ├── hooks/         # Custom hooks
+    │   ├── lib/           # Utilities
+    │   ├── types/         # Type definitions
+    │   └── main.tsx       # Application entrypoint
+    ├── package.json       # Frontend dependencies
+    └── tsconfig.json     # TypeScript config
 ```
 
-## Getting Started
+## 🚀 Getting Started
+
+### Prerequisites
+
+- Python 3.10+
+- Node.js 18+
+- SQLite3
 
 ### Backend Setup
 
 ```bash
 cd backend
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+source venv/bin/activate  # Linux/MacOS
 pip install -r requirements.txt
-```
 
-Configure environment variables in `backend/.env`:
-
-```env
-DATABASE_URL=sqlite:///./data/url_shortener.db
-API_HOST=http://localhost:8000
-ALLOWED_ORIGINS=http://localhost:5173
+# Run development server
+uvicorn app.main:app --reload
 ```
 
 ### Frontend Setup
@@ -100,73 +108,61 @@ pnpm install
 pnpm dev
 ```
 
-## API Endpoints
+## 🌐 API Documentation
 
-### Core Endpoints
+Access interactive API docs at `http://localhost:8000/docs`
 
-- `GET /` - Health check
-- `POST /shorten` - Create short URL
-- `GET /{short_key}` - Redirect to original URL
-- `GET /stats/{short_key}` - Get URL analytics
+### Example Request
 
-### Analytics Response Example
+```bash
+curl -X POST "http://localhost:8000/shorten" \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com"}'
+```
+
+### Example Response
 
 ```json
 {
   "short_url": "http://localhost:8000/abc123",
-  "original_url": "https://example.com",
-  "created_at": "2024-01-01T12:00:00",
-  "access_count": 42,
-  "locations": [
-    {
-      "city": "New York",
-      "country": "United States",
-      "coordinates": {
-        "lat": 40.7128,
-        "lon": -74.006
-      },
-      "accessed_at": "2024-01-01T12:00:00"
-    }
-  ],
-  "device_info": {
-    "device_type": "mobile",
-    "browser": "Chrome",
-    "os": "iOS",
-    "is_bot": false
+  "analytics": {
+    "access_count": 42,
+    "devices": { "mobile": 15, "desktop": 27 },
+    "locations": [
+      {
+        "city": "New York",
+        "country": "US",
+        "coordinates": { "lat": 40.7128, "lon": -74.006 }
+      }
+    ]
   }
 }
 ```
 
-## Development Status
+## 📈 Roadmap
 
-- ✅ Backend API complete
-- 🚧 Frontend under construction
-- 📱 Device analytics implemented
-- 🌍 Geolocation tracking active
-- 🎨 UI/UX design in progress
-
-## Roadmap
-
-- [ ] User authentication
-- [ ] Custom URL slugs
+- [x] Core URL shortening functionality
+- [x] Basic analytics tracking
+- [ ] User authentication system
+- [ ] Admin dashboard
+- [ ] API rate limiting
+- [ ] Bulk URL import/export
 - [ ] QR code generation
-- [ ] QR code customization
-- [ ] Advanced analytics dashboard
-- [ ] Rate limiting
-- [ ] Dockerize application
 
-## Contributing
+## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+1. Fork the repository
+2. Create your feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-## License
+## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Distributed under the MIT License. See `LICENSE` for more information.
 
-## Author
+---
 
-Thiago Costa
+**Project Maintainers**  
+[Thiago Costa](https://github.com/tjthiagocosta)  
 
-## Support
-
-For support or questions, please open an issue in the GitHub repository.
