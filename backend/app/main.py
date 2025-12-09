@@ -106,7 +106,7 @@ async def root():
     }
 
 
-@app.post("/shorten")
+@app.post("/shorten", tags=["URL"])
 def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     """
     Create a shortened URL from a long URL.
@@ -115,7 +115,7 @@ def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     return create_short_url(db, original_url)
 
 
-@app.get("/{short_key}")
+@app.get("/{short_key}", tags=["URL"])
 async def redirect_to_url(
     short_key: str, request: Request, db: Session = Depends(get_db)
 ):
