@@ -91,6 +91,17 @@ class URLInput(BaseModel):
     url: HttpUrl
 
 
+class ShortenResponse(BaseModel):
+    """
+    Response model for URL shortening request.
+
+    Attributes:
+        short_url: The shortened URL that redirects to the original
+    """
+
+    short_url: str
+
+
 @app.get("/", tags=["Health"])
 async def root():
     """
@@ -106,7 +117,7 @@ async def root():
     }
 
 
-@app.post("/shorten", tags=["URL"])
+@app.post("/shorten", response_model=ShortenResponse, status_code=201, tags=["URL"])
 def shorten_url(url_input: URLInput, db: Session = Depends(get_db)):
     """
     Create a shortened URL from a long URL.
